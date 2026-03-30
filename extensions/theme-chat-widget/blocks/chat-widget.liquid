@@ -1,0 +1,58 @@
+{% comment %}
+  AgentClerk Chat Widget — App Embed Block
+  This block loads the chat widget JS and CSS on every page.
+{% endcomment %}
+
+{% if block.settings.enabled %}
+  <div
+    id="agentclerk-chat-root"
+    data-shop="{{ shop.permanent_domain }}"
+    data-proxy-url="/apps/agentclerk/chat"
+    data-position="{{ block.settings.position }}"
+    data-button-label="{{ block.settings.button_label }}"
+    data-primary-color="{{ block.settings.primary_color }}"
+    style="display: none;"
+  ></div>
+
+  {{ 'agentclerk-chat.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'agentclerk-chat.js' | asset_url }}" defer></script>
+{% endif %}
+
+{% schema %}
+{
+  "name": "AgentClerk Chat",
+  "target": "body",
+  "javascript": "agentclerk-chat.js",
+  "stylesheet": "agentclerk-chat.css",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enabled",
+      "label": "Enable Chat Widget",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "position",
+      "label": "Widget Position",
+      "options": [
+        { "value": "bottom-right", "label": "Bottom Right" },
+        { "value": "bottom-left", "label": "Bottom Left" }
+      ],
+      "default": "bottom-right"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button Label",
+      "default": "Get Help"
+    },
+    {
+      "type": "color",
+      "id": "primary_color",
+      "label": "Primary Color",
+      "default": "#5C6AC4"
+    }
+  ]
+}
+{% endschema %}

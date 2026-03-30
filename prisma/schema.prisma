@@ -1,0 +1,145 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Shopify session storage (required by @shopify/shopify-app-remix)
+model Session {
+  id          String    @id
+  shop        String
+  state       String
+  isOnline    Boolean   @default(false)
+  scope       String?
+  expires     DateTime?
+  accessToken String
+  userId      BigInt?
+}
+
+// AgentClerk install configuration
+model Install {
+  id             String   @id @default(cuid())
+  shop           String   @unique
+  shopDomain     String
+  shopifyShopId  String?
+  installSecret  String
+  tier           String   @default("byok") // byok | turnkey
+  apiKey         String? // Encrypted Anthropic API key (BYOK)
+  pluginStatus   String   @default("onboarding") // onboarding | active | suspended
+  onboardingStep Int      @default(1)
+  licenseStatus  String   @default("none") // none | active
+  licenseKey     String?
+  billingStatus  String   @default("active")
+  accruedFees    Float    @default(0)
+  lastScanDate   DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  config        AgentConfig?
+  conversations Conversation[]
+  a2aTasks      A2ATask[]
+}
+
+// Agent configuration
+model AgentConfig {
+  id                String   @id @default(cuid())
+  installId         String   @unique
+  install           Install  @relation(fields: [installId], references: [id])
+  agentName         String   @default("AgentClerk")
+  businessName      String   @default("")
+  businessDesc      String   @default("")
+  supportFile       String   @default("") @db.Text
+  escalationEmail   String   @default("")
+  escalationMessage String   @default("A support agent will follow up via email within 24 hours.")
+  escalationMethod  String   @default("both") // email | wp | both
+  escalationTopics  String[]
+  refundPolicy      String   @default("") @db.Text
+  licensePolicy     String   @default("") @db.Text
+  deliveryPolicy    String   @default("") @db.Text
+  productVisibility Json     @default("{}")
+  placementWidget   Boolean  @default(true)
+  placementProduct  Boolean  @default(true)
+  placementClerk    Boolean  @default(true)
+  buttonLabel       String   @default("Get Help")
+  position          String   @default("bottom-right")
+  scanCache         Json     @default("{}")
+}
+
+// Conversations
+model Conversation {
+  id           String    @id @default(cuid())
+  installId    String
+  install      Install   @relation(fields: [installId], references: [id])
+  sessionId    String    @unique
+  buyerType    String    @default("human") // human | agent
+  firstMessage String?   @db.Text
+  productName  String?
+  outcome      String    @default("browsing") // browsing | quote | purchased | support | abandoned | escalated
+  quoteLinkId  String?
+  saleAmount   Float?
+  agentFee     Float?
+  startedAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  messages     Message[]
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  role           String // user | assistant
+  content        String       @db.Text
+  createdAt      DateTime     @default(now())
+}
+
+// Quote links for checkout tracking
+model QuoteLink {
+  id             String   @id @default(cuid())
+  conversationId String
+  productId      String
+  productName    String?
+  amount         Float
+  checkoutUrl    String?
+  orderId        String?
+  status         String   @default("pending") // pending | completed | expired
+  expiresAt      DateTime
+  createdAt      DateTime @default(now())
+}
+
+// A2A protocol tasks
+model A2ATask {
+  id        String        @id @default(cuid())
+  installId String
+  install   Install       @relation(fields: [installId], references: [id])
+  contextId String?
+  sessionId String
+  status    String        @default("TASK_STATE_SUBMITTED")
+  errorMsg  String?       @db.Text
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  messages  A2AMessage[]
+  artifacts A2AArtifact[]
+}
+
+model A2AMessage {
+  id        String   @id @default(cuid())
+  taskId    String
+  task      A2ATask  @relation(fields: [taskId], references: [id])
+  messageId String
+  role      String // ROLE_USER | ROLE_AGENT
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+}
+
+model A2AArtifact {
+  id         String   @id @default(cuid())
+  taskId     String
+  task       A2ATask  @relation(fields: [taskId], references: [id])
+  artifactId String
+  name       String?
+  partsJson  String   @db.Text
+  createdAt  DateTime @default(now())
+}

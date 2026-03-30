@@ -1,0 +1,29 @@
+name = "AgentClerk"
+client_id = "YOUR_CLIENT_ID"
+application_url = "https://your-app-server.fly.dev"
+
+[access_scopes]
+scopes = "read_products,read_orders,read_customers,read_content,read_themes"
+
+[auth]
+redirect_urls = ["https://your-app-server.fly.dev/auth/callback"]
+
+[webhooks]
+api_version = "2025-04"
+
+  [[webhooks.subscriptions]]
+  topics = ["app/uninstalled"]
+  uri = "/webhooks"
+
+  [[webhooks.subscriptions]]
+  topics = ["orders/create", "orders/paid"]
+  uri = "/webhooks"
+
+  [[webhooks.subscriptions]]
+  topics = ["products/create", "products/update", "products/delete"]
+  uri = "/webhooks"
+
+[app_proxy]
+url = "https://your-app-server.fly.dev/api"
+subpath = "agentclerk"
+subpath_prefix = "apps"

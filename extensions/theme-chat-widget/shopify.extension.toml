@@ -1,0 +1,40 @@
+api_version = "2025-04"
+
+[[extensions]]
+name = "AgentClerk Chat Widget"
+handle = "theme-chat-widget"
+type = "theme_app_extension"
+
+  [extensions.settings]
+
+    [[extensions.settings.fields]]
+    key = "enabled"
+    type = "checkbox"
+    label = "Enable Chat Widget"
+    default = true
+
+    [[extensions.settings.fields]]
+    key = "position"
+    type = "select"
+    label = "Widget Position"
+    default = "bottom-right"
+
+      [[extensions.settings.fields.options]]
+      value = "bottom-right"
+      label = "Bottom Right"
+
+      [[extensions.settings.fields.options]]
+      value = "bottom-left"
+      label = "Bottom Left"
+
+    [[extensions.settings.fields]]
+    key = "button_label"
+    type = "text"
+    label = "Button Label"
+    default = "Get Help"
+
+    [[extensions.settings.fields]]
+    key = "primary_color"
+    type = "color"
+    label = "Primary Color"
+    default = "#5C6AC4"
