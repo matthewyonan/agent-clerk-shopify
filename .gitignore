@@ -1,0 +1,10 @@
+node_modules/
+build/
+.cache/
+.env
+.env.local
+dist/
+*.log
+.DS_Store
+prisma/*.db
+prisma/migrations/
