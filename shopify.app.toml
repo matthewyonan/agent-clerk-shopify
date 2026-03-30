@@ -1,12 +1,12 @@
 name = "AgentClerk"
 client_id = "23e9d3c89a55ccc5d8736bdc69bdc014"
-application_url = "https://your-app-server.fly.dev"
+application_url = "https://web-service-production-c889.up.railway.app"
 
 [access_scopes]
 scopes = "read_products,read_orders,read_customers,read_content,read_themes"
 
 [auth]
-redirect_urls = ["https://your-app-server.fly.dev/auth/callback"]
+redirect_urls = ["https://web-service-production-c889.up.railway.app/auth/callback"]
 
 [webhooks]
 api_version = "2025-04"
@@ -24,6 +24,6 @@ api_version = "2025-04"
   uri = "/webhooks"
 
 [app_proxy]
-url = "https://your-app-server.fly.dev/api"
+url = "https://web-service-production-c889.up.railway.app/api"
 subpath = "agentclerk"
 subpath_prefix = "apps"
