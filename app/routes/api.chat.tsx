@@ -1,5 +1,6 @@
 import { json, type ActionFunctionArgs } from "@remix-run/node";
 import { authenticate } from "~/shopify.server";
+import { prisma } from "~/db.server";
 import { processChat, processQuoteToolCall, detectBuyerType } from "~/lib/agent.server";
 import { v4 as uuidv4 } from "uuid";
 import crypto from "node:crypto";
@@ -68,9 +69,9 @@ export async function action({ request }: ActionFunctionArgs) {
         };
 
         // Find the conversation to get its ID
-        const conversation = await import("~/db.server").then((m) =>
-          m.prisma.conversation.findUnique({ where: { sessionId } }),
-        );
+        const conversation = await prisma.conversation.findUnique({
+          where: { sessionId },
+        });
 
         if (conversation) {
           const quoteResult = await processQuoteToolCall(
