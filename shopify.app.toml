@@ -1,5 +1,5 @@
 name = "AgentClerk"
-client_id = "YOUR_CLIENT_ID"
+client_id = "23e9d3c89a55ccc5d8736bdc69bdc014"
 application_url = "https://your-app-server.fly.dev"
 
 [access_scopes]
