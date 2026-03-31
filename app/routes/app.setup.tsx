@@ -70,6 +70,13 @@ export async function action({ request }: ActionFunctionArgs) {
         },
         include: { config: true },
       });
+    } else if (!install.installSecret) {
+      // Re-register if installSecret is missing
+      const { installSecret } = await registerInstall(shop, shop);
+      await prisma.install.update({
+        where: { shop },
+        data: { installSecret, tier: tier || "byok", onboardingStep: 2 },
+      });
     } else {
       await prisma.install.update({
         where: { shop },

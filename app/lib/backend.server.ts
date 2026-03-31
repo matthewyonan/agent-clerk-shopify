@@ -42,19 +42,22 @@ export async function backendRequest(
 export async function registerInstall(
   shop: string,
   shopDomain: string,
-): Promise<{ installSecret: string }> {
-  const response = await fetch(`${BACKEND_URL}/install/register`, {
+  shopifyShopId?: string,
+): Promise<{ installSecret: string; stripePublishableKey?: string }> {
+  const response = await fetch(`${BACKEND_URL}/installs/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      site: `https://${shopDomain}`,
+      siteUrl: `https://${shopDomain}`,
       platform: "shopify",
-      shop,
+      shopifyShopDomain: shopDomain,
+      ...(shopifyShopId ? { shopifyShopId } : {}),
     }),
   });
 
   if (!response.ok) {
-    throw new Error(`Failed to register install: ${response.statusText}`);
+    const text = await response.text();
+    throw new Error(`Failed to register install: ${response.status} ${response.statusText} - ${text}`);
   }
 
   return response.json();
